@@ -1,0 +1,334 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define TABLE_SIZE 100
+
+typedef struct Product {
+    int id;
+    char name[50];
+    int quantity;
+    float price;
+} Product;
+
+typedef struct HashNode {
+    Product product;
+    struct HashNode* next;
+} HashNode;
+
+HashNode* hashTable[TABLE_SIZE];
+
+int hashFunction(int id) {
+    return id % TABLE_SIZE;
+}
+
+void insertHash(Product p) {
+    int index = hashFunction(p.id);
+    HashNode* newNode = (HashNode*)malloc(sizeof(HashNode));
+    newNode->product = p;
+    newNode->next = hashTable[index];
+    hashTable[index] = newNode;
+}
+
+HashNode* searchHash(int id) {
+    int index = hashFunction(id);
+    HashNode* temp = hashTable[index];
+
+    while (temp) {
+        if (temp->product.id == id)
+            return temp;
+        temp = temp->next;
+    }
+    return NULL;
+}
+
+void deleteHash(int id) {
+    int index = hashFunction(id);
+    HashNode *temp = hashTable[index], *prev = NULL;
+
+    while (temp) {
+        if (temp->product.id == id) {
+            if (prev == NULL)
+                hashTable[index] = temp->next;
+            else
+                prev->next = temp->next;
+            free(temp);
+            return;
+        }
+        prev = temp;
+        temp = temp->next;
+    }
+}
+
+typedef struct TreeNode {
+    Product product;
+    struct TreeNode *left, *right;
+} TreeNode;
+
+TreeNode* createNode(Product p) {
+    TreeNode* node = (TreeNode*)malloc(sizeof(TreeNode));
+    node->product = p;
+    node->left = node->right = NULL;
+    return node;
+}
+
+TreeNode* insertBST(TreeNode* root, Product p) {
+    if (root == NULL)
+        return createNode(p);
+
+    if (p.id < root->product.id)
+        root->left = insertBST(root->left, p);
+    else
+        root->right = insertBST(root->right, p);
+
+    return root;
+}
+
+TreeNode* findMin(TreeNode* root) {
+    while (root->left)
+        root = root->left;
+    return root;
+}
+
+TreeNode* deleteBST(TreeNode* root, int id) {
+    if (!root) return NULL;
+
+    if (id < root->product.id)
+        root->left = deleteBST(root->left, id);
+
+    else if (id > root->product.id)
+        root->right = deleteBST(root->right, id);
+
+    else {
+        if (!root->left) {
+            TreeNode* temp = root->right;
+            free(root);
+            return temp;
+        }
+
+        else if (!root->right) {
+            TreeNode* temp = root->left;
+            free(root);
+            return temp;
+        }
+
+        TreeNode* temp = findMin(root->right);
+        root->product = temp->product;
+        root->right = deleteBST(root->right, temp->product.id);
+    }
+
+    return root;
+}
+
+void inorder(TreeNode* root) {
+    if (!root) return;
+
+    inorder(root->left);
+
+    printf("ID: %d | Name: %s | Qty: %d | Price: %.2f\n",
+           root->product.id,
+           root->product.name,
+           root->product.quantity,
+           root->product.price);
+
+    inorder(root->right);
+}
+
+typedef struct StackNode {
+    Product product;
+    int operation;
+    struct StackNode* next;
+} StackNode;
+
+StackNode* top = NULL;
+
+void push(Product p, int op) {
+    StackNode* node = (StackNode*)malloc(sizeof(StackNode));
+    node->product = p;
+    node->operation = op;
+    node->next = top;
+    top = node;
+}
+
+StackNode* pop() {
+    if (!top) return NULL;
+
+    StackNode* temp = top;
+    top = top->next;
+    return temp;
+}
+
+TreeNode* root = NULL;
+
+void addProduct() {
+    Product p;
+
+    printf("Enter ID: ");
+    scanf("%d", &p.id);
+
+    printf("Enter Name: ");
+    scanf("%s", p.name);
+
+    printf("Enter Quantity: ");
+    scanf("%d", &p.quantity);
+
+    printf("Enter Price: ");
+    scanf("%f", &p.price);
+
+    insertHash(p);
+    root = insertBST(root, p);
+
+    push(p, 1);
+
+    printf("Product added successfully\n");
+}
+
+void searchProduct() {
+    int id;
+    printf("Enter Product ID: ");
+    scanf("%d", &id);
+
+    HashNode* result = searchHash(id);
+
+    if (result) {
+        printf("Found: %s Qty:%d Price:%.2f\n",
+               result->product.name,
+               result->product.quantity,
+               result->product.price);
+    }
+    else
+        printf("Product not found\n");
+}
+
+void deleteProduct() {
+    int id;
+
+    printf("Enter Product ID to delete: ");
+    scanf("%d", &id);
+
+    HashNode* result = searchHash(id);
+
+    if (!result) {
+        printf("Product not found\n");
+        return;
+    }
+
+    push(result->product, 2);
+
+    deleteHash(id);
+    root = deleteBST(root, id);
+
+    printf("Product deleted\n");
+}
+
+void updateStock() {
+    int id;
+
+    printf("Enter Product ID: ");
+    scanf("%d", &id);
+
+    HashNode* result = searchHash(id);
+
+    if (!result) {
+        printf("Product not found\n");
+        return;
+    }
+
+    push(result->product, 3);
+
+    printf("Enter new quantity: ");
+    scanf("%d", &result->product.quantity);
+
+    printf("Stock updated\n");
+}
+
+void showInventory() {
+    if (!root)
+        printf("Inventory empty\n");
+    else
+        inorder(root);
+}
+
+void undoOperation() {
+    StackNode* last = pop();
+
+    if (!last) {
+        printf("Nothing to undo\n");
+        return;
+    }
+
+    if (last->operation == 1) {
+        deleteHash(last->product.id);
+        root = deleteBST(root, last->product.id);
+        printf("Undo: Insert reversed\n");
+    }
+
+    else if (last->operation == 2) {
+        insertHash(last->product);
+        root = insertBST(root, last->product);
+        printf("Undo: Delete reversed\n");
+    }
+
+    else if (last->operation == 3) {
+        HashNode* node = searchHash(last->product.id);
+        if (node)
+            node->product = last->product;
+
+        printf("Undo: Update reversed\n");
+    }
+
+    free(last);
+}
+
+int main() {
+
+    int choice;
+
+    while (1) {
+
+        printf("\n===== INVENTORY SYSTEM =====\n");
+        printf("1 Add Product\n");
+        printf("2 Delete Product\n");
+        printf("3 Search Product\n");
+        printf("4 Update Stock\n");
+        printf("5 Show Inventory\n");
+        printf("6 Undo Last Operation\n");
+        printf("7 Exit\n");
+
+        printf("Enter choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+
+        case 1:
+            addProduct();
+            break;
+
+        case 2:
+            deleteProduct();
+            break;
+
+        case 3:
+            searchProduct();
+            break;
+
+        case 4:
+            updateStock();
+            break;
+
+        case 5:
+            showInventory();
+            break;
+
+        case 6:
+            undoOperation();
+            break;
+
+        case 7:
+            exit(0);
+
+        default:
+            printf("Invalid choice\n");
+        }
+    }
+}
