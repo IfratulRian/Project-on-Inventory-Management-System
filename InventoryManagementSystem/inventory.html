@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Table</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Inventory Table</h1>
+        <button onclick="goBack()">Back</button>
+        <div class="inventory-section">
+            <table id="inventoryTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Get inventory from localStorage
+        let inventory = JSON.parse(localStorage.getItem("inventory")) || [];
+
+        const tbody = document.querySelector("#inventoryTable tbody");
+        inventory.sort((a,b)=>a.id-b.id).forEach(p => {
+            const row = document.createElement("tr");
+            row.innerHTML = `<td>${p.id}</td><td>${p.name}</td><td>${p.quantity}</td><td>${p.price.toFixed(2)}</td>`;
+            tbody.appendChild(row);
+        });
+
+        function goBack() {
+            window.location.href = "index.html";
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,111 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+    background-color: #000728;
+    color: #ffffff;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
+
+.container {
+    width: 100%;
+    max-width: 800px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #2c01b9; /* neon pink-cyan mix */
+}
+
+/* Form Section */
+.form-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.form-section input {
+    padding: 10px;
+    border: 1px solid #ccc; /* normal input style */
+    border-radius: 5px;
+    outline: none;
+    font-size: 16px;
+    color: #0d0d0d;
+    background-color: #ffffff; /* normal white input */
+}
+
+.form-section input::placeholder {
+    color: #888;
+}
+
+.buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 5px;
+}
+
+button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    background-color: #00276f;
+    color: #ffffff;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    background-color: #00ffff;
+    color: #0d0d0d;
+    box-shadow: 0 0 15px #00ffff, 0 0 25px #ff00ff;
+}
+
+/* Search */
+.search {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+/* Inventory Table */
+.inventory-section {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+thead {
+    background-color: #ff00ff20;
+}
+
+th, td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #00ffff40;
+}
+
+tbody tr:hover {
+    background-color: #ff00ff10;
+}
+
+@media (max-width: 600px) {
+    .buttons {
+        flex-direction: column;
+    }
+    .search {
+        flex-direction: column;
+    }
+}

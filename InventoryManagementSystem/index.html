@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Inventory System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Inventory System</h1>
+
+        <div class="form-section">
+            <input type="number" id="productId" placeholder="Product ID">
+            <input type="text" id="productName" placeholder="Product Name">
+            <input type="number" id="productQty" placeholder="Quantity">
+            <input type="number" step="0.01" id="productPrice" placeholder="Price">
+
+            <div class="buttons">
+                <button onclick="addProduct()">Add Product</button>
+                <button onclick="deleteProduct()">Delete Product</button>
+                <button onclick="updateStock()">Update Stock</button>
+                <button onclick="undoOperation()">Undo</button>
+                <button onclick="goToInventory()">Inventory</button>
+            </div>
+
+            <div class="search">
+                <input type="number" id="searchId" placeholder="Search Product by ID">
+                <button onclick="searchProduct()">Search</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
