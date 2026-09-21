@@ -59,7 +59,6 @@ void deleteHash(int id) {
         temp = temp->next;
     }
 }
-
 typedef struct TreeNode {
     Product product;
     struct TreeNode *left, *right;
